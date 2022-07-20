@@ -15,14 +15,14 @@ global using System.Security.Claims;
 
 global using Ispit.Todo.Data;
 global using Ispit.Todo.Models;
-//global using Ispit.Todo.Models.Base;
-//global using Ispit.Todo.Models.Binding;
-//global using Ispit.Todo.Models.Dbo;
-//global using Ispit.Todo.Models.Dbo.Base;
+global using Ispit.Todo.Models.Base;
+global using Ispit.Todo.Models.Binding;
+global using Ispit.Todo.Models.Dbo;
+global using Ispit.Todo.Models.Dbo.Base;
 //global using Ispit.Todo.Models.Dto;
-//global using Ispit.Todo.Models.ViewModel;
+global using Ispit.Todo.Models.ViewModel;
              
-//global using Ispit.Todo.Services.Interface;
-//global using Ispit.Todo.Services.Implementation;
+global using Ispit.Todo.Services.Interface;
+global using Ispit.Todo.Services.Implementation;
 
-//global using AutoMapper;
+global using AutoMapper;

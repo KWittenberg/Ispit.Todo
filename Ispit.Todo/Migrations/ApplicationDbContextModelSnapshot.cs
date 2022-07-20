@@ -4,18 +4,16 @@ using Ispit.Todo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Ispit.Todo.Data.Migrations
+namespace Ispit.Todo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220719172434_init2")]
-    partial class init2
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,7 +22,7 @@ namespace Ispit.Todo.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Ispit.Todo.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -42,14 +40,6 @@ namespace Ispit.Todo.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -101,15 +91,13 @@ namespace Ispit.Todo.Data.Migrations
                         {
                             Id = "badd4ddd-df0e-4621-af37-c2b36aaa6742",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "104dcbaf-94fc-4b30-95d1-d9e34c5acba3",
+                            ConcurrencyStamp = "f8a5d925-36cb-448b-82ce-21c2a0683ac4",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
-                            FirstName = "Hi",
-                            LastName = "Admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJl+NG5Gh8dVMaj3XTpgjxoVg4ct4aQw7iRs6lH8B0RAfoEcENz4RdOI3/9Kf6jNFg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAaMATxyl57e59JCYVJsxBNldZeKgGKvVmIegkstMj/ybA7jZpr+7tZkE0Jhe4qEAQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "c8c5cc23-1703-4984-8ac7-4b178d2d9982",
                             TwoFactorEnabled = false,
@@ -117,7 +105,39 @@ namespace Ispit.Todo.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Ispit.Todo.Models.Todo", b =>
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.Task", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ToDoListId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ToDoListId");
+
+                    b.ToTable("Task");
+                });
+
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.ToDoList", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,21 +149,22 @@ namespace Ispit.Todo.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("Datum")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Napraviti")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Todo");
+                    b.ToTable("ToDoList");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -176,7 +197,7 @@ namespace Ispit.Todo.Data.Migrations
                         new
                         {
                             Id = "d6b5b0da-e61e-46ba-b766-e1acc7401352",
-                            ConcurrencyStamp = "4403a2b6-6bb5-44c2-8f7f-54d293ff5d5f",
+                            ConcurrencyStamp = "65187089-6b20-4551-81fd-292f6ce4f45e",
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         });
@@ -299,10 +320,21 @@ namespace Ispit.Todo.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Ispit.Todo.Models.Todo", b =>
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.Task", b =>
                 {
-                    b.HasOne("Ispit.Todo.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                    b.HasOne("Ispit.Todo.Models.Dbo.ToDoList", "ToDoList")
+                        .WithMany("Task")
+                        .HasForeignKey("ToDoListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ToDoList");
+                });
+
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.ToDoList", b =>
+                {
+                    b.HasOne("Ispit.Todo.Models.Dbo.ApplicationUser", "ApplicationUser")
+                        .WithMany("ToDoList")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -321,7 +353,7 @@ namespace Ispit.Todo.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Ispit.Todo.Models.ApplicationUser", null)
+                    b.HasOne("Ispit.Todo.Models.Dbo.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -330,7 +362,7 @@ namespace Ispit.Todo.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Ispit.Todo.Models.ApplicationUser", null)
+                    b.HasOne("Ispit.Todo.Models.Dbo.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -345,7 +377,7 @@ namespace Ispit.Todo.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Ispit.Todo.Models.ApplicationUser", null)
+                    b.HasOne("Ispit.Todo.Models.Dbo.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -354,11 +386,21 @@ namespace Ispit.Todo.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Ispit.Todo.Models.ApplicationUser", null)
+                    b.HasOne("Ispit.Todo.Models.Dbo.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.ApplicationUser", b =>
+                {
+                    b.Navigation("ToDoList");
+                });
+
+            modelBuilder.Entity("Ispit.Todo.Models.Dbo.ToDoList", b =>
+                {
+                    b.Navigation("Task");
                 });
 #pragma warning restore 612, 618
         }

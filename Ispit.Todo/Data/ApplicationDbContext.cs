@@ -11,11 +11,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(builder);
         string role = "admin";
         string userName = "admin@admin.com";
-        //string roleId = Guid.NewGuid().ToString();
-        //string userId = Guid.NewGuid().ToString();
         string roleId = "d6b5b0da-e61e-46ba-b766-e1acc7401352";
         string userId = "badd4ddd-df0e-4621-af37-c2b36aaa6742";
-
 
         builder.Entity<IdentityRole>().HasData(new IdentityRole
         {
@@ -32,17 +29,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             NormalizedUserName = userName.ToUpper(),
             NormalizedEmail = userName.ToUpper(),
             EmailConfirmed = true,
-            PasswordHash = hasher.HashPassword(null, "Password123"),
+            PasswordHash = hasher.HashPassword(null, "Pa$$w0rd"),
             //SecurityStamp = Guid.NewGuid().ToString("D"),
-            SecurityStamp = "c8c5cc23-1703-4984-8ac7-4b178d2d9982",
-            FirstName = "Hi",
-            LastName = "Admin"
+            SecurityStamp = "c8c5cc23-1703-4984-8ac7-4b178d2d9982"
 
         });
 
-        builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string> { RoleId = roleId, UserId = userId });
+
+        builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+        {
+            RoleId = roleId,
+            UserId = userId
+        });
     }
 
     public DbSet<ApplicationUser> ApplicationUser { get; set; }
-    public DbSet<Models.Todo> Todo { get; set; }
+    public DbSet<Models.Dbo.Task> Task { get; set; }
+    public DbSet<ToDoList> ToDoList { get; set; }
 }

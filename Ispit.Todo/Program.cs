@@ -5,8 +5,16 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// Add ApplicationUser
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllersWithViews();
+
+// Add ToDoService
+builder.Services.AddScoped<IToDoService, ToDoService>();
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
+
 
 var app = builder.Build();
 

@@ -1,148 +1,84 @@
 ﻿namespace Ispit.Todo.Controllers;
-[Authorize]
-public class TodoController : Controller
-{
-    private readonly ApplicationDbContext _context;
 
-    public TodoController(ApplicationDbContext context)
+[Authorize]
+public class ToDoController : Controller
+{
+    private readonly IToDoService toDoService;
+    private readonly UserManager<ApplicationUser> UserManager;
+
+    public ToDoController(IToDoService toDoService, UserManager<ApplicationUser> userManager)
     {
-        _context = context;
+        this.toDoService = toDoService;
+        UserManager = userManager;
     }
 
-    // GET: Todo
     public async Task<IActionResult> Index()
     {
-        return _context.Todo != null ?
-                    View(await _context.Todo.ToListAsync()) :
-                    Problem("Entity set 'ApplicationDbContext.Todo'  is null.");
+        var todoLists = await toDoService.GetToDoList();
+        return View(todoLists);
     }
 
-    // GET: Todo/Details/5
-    public async Task<IActionResult> Details(int? id)
+    /// <summary>
+    /// Details
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<IActionResult> Details(int id)
     {
-        if (id == null || _context.Todo == null)
-        {
-            return NotFound();
-        }
-
-        var todo = await _context.Todo
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (todo == null)
-        {
-            return NotFound();
-        }
-
-        return View(todo);
+        ViewBag.ToDoListId = id;
+        CreateTaskViewModel model = new CreateTaskViewModel();
+        model.Tasks = await toDoService.GetTasks(id);
+        model.ToListId = id;
+        return View(model);
     }
 
-    // GET: Todo/Create
-    public IActionResult Create()
+
+
+    /// <summary>
+    /// CreateToDoList
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> CreateToDoList()
     {
         return View();
     }
-
-    // POST: Todo/Create
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Napraviti,Status,Datum")] Models.Todo todo)
+    public async Task<IActionResult> CreateToDoList(ToDoListBinding model)
     {
-        if (ModelState.IsValid)
-        {
-            _context.Add(todo);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(todo);
+        var userId = UserManager.GetUserId(User);
+        model.ApplicationUserId = userId;
+        var todoLists = await toDoService.CreateToDoList(model);
+        return RedirectToAction("Index");
     }
 
-    // GET: Todo/Edit/5
-    public async Task<IActionResult> Edit(int? id)
+
+    /// <summary>
+    /// CreateTask
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> CreateTask(int id)
     {
-        if (id == null || _context.Todo == null)
-        {
-            return NotFound();
-        }
-
-        var todo = await _context.Todo.FindAsync(id);
-        if (todo == null)
-        {
-            return NotFound();
-        }
-        return View(todo);
+        return View(new TaskBinding { ToDoListId = id });
     }
-
-    // POST: Todo/Edit/5
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Napraviti,Status,Datum")] Models.Todo todo)
+    public async Task<IActionResult> CreateTask(TaskBinding model)
     {
-        if (id != todo.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(todo);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoExists(todo.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(todo);
+        var task = await toDoService.CreateTask(model);
+        return RedirectToAction("Details", new { id = task.ToDoList.Id });
     }
-
-    // GET: Todo/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+    
+    /// <summary>
+    /// ChangeTaskStatus
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public async Task<IActionResult> ChangeTaskStatus(int id, bool status)
     {
-        if (id == null || _context.Todo == null)
-        {
-            return NotFound();
-        }
-
-        var todo = await _context.Todo
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (todo == null)
-        {
-            return NotFound();
-        }
-
-        return View(todo);
-    }
-
-    // POST: Todo/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        if (_context.Todo == null)
-        {
-            return Problem("Entity set 'ApplicationDbContext.Todo'  is null.");
-        }
-        var todo = await _context.Todo.FindAsync(id);
-        if (todo != null)
-        {
-            _context.Todo.Remove(todo);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool TodoExists(int id)
-    {
-        return (_context.Todo?.Any(e => e.Id == id)).GetValueOrDefault();
+        var task = await toDoService.ChangeTaskStatus(id, status);
+        return RedirectToAction("Details", new { id = task.ToDoList.Id });
     }
 }
