@@ -13,13 +13,10 @@ public class MappingProfile : Profile
         CreateMap<ToDoList, ToDoListViewModel>();
         CreateMap<ToDoListViewModel, ToDoListUpdateBinding>();
 
-        CreateMap<ToDoListBinding, ToDoList>();
-        CreateMap<ToDoListUpdateBinding, ToDoList>();
-        CreateMap<ToDoList, ToDoListViewModel>();
-        CreateMap<ToDoListViewModel, ToDoListUpdateBinding>();
-
         // Task
         CreateMap<TaskBinding, Ispit.Todo.Models.Dbo.Task>();
+        CreateMap<TaskUpdateBinding, Ispit.Todo.Models.Dbo.Task>();
         CreateMap<Ispit.Todo.Models.Dbo.Task, TaskViewModel>();
+        CreateMap<TaskViewModel, TaskUpdateBinding>();
     }
 }

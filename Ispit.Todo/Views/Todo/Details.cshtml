@@ -1,74 +1,64 @@
-﻿@using Ispit.Todo.Models.ViewModel
-@model CreateTaskViewModel
+﻿@model Ispit.Todo.Models.ViewModel.CreateTaskViewModel
 @{
     ViewData["Title"] = "Details";
     int toDoListId = ViewBag.ToDoListId;
+    int counter = 1;
 }
 
-<h1>Details</h1>
-@Html.ActionLink("Create", "CreateTask", new {  id=Model.ToListId })
-@*<p>
-
-
-
-        @Html.ActionLink("Create", "CreateTask", new {  id=toDoListId })
-</p>*@
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Id
-            </th>
-            <th>
-                Title
-            </th>
-            <th>
-                Description
-            </th>
-            <th>
-                Status
-            </th>
-
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Tasks)
-        {
-               string redirectUrl = Url.Action("ChangeTaskStatus","Todo",new {  id=item.Id, status = !item.Status  });
-
-
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @if (item.Status)
+<br />
+<br />
+<!-- ToDo List -->
+<div class="container mt-5">
+    <main role="main" class="pb-3">
+        <h1>Tasks</h1>
+        <div class="card-body mt-5 p-0">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 5%">#</th>
+                        <th style="width: 30%">Title</th>
+                        <th>Description</th>
+                        <th style="width: 6%">Status</th>
+                        <th style="width: 12%">Created</th>
+                        <th style="width: 11%"><a asp-controller="Todo" asp-action="CreateTask" asp-route-id="@Model.ToListId" class="btn btn-block btn-secondary btn-sm"><i class="bi bi-plus-circle"></i> &nbsp; Add New</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Tasks)
                     {
-                        <input type="checkbox" onclick="RedirectToUrl('@redirectUrl')" checked>
+                        string redirectUrl = Url.Action("ChangeTaskStatus", "Todo", new { id = item.Id, status = !item.Status });
+                        <tr>
+                            <td>@counter</td>
+                            <td>@item.Title</td>
+                            <td>@item.Description</td>
+                            <td>
+                                @if (item.Status)
+                                {
+                                    <input type="checkbox" onclick="RedirectToUrl('@redirectUrl')" checked>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" onclick="RedirectToUrl('@redirectUrl')">
+                                }
+                            </td>
+                            <td>@item.Created</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-controller="ToDo" asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm"><i class="bi bi-eye"></i></a>
+                                    <a asp-controller="ToDo" asp-action="EditTask" asp-route-id="@item.Id" class="btn btn-secondary btn-sm"><i class="bi bi-pencil-square"></i></a>
+                                    <a asp-controller="ToDo" asp-action="DeleteTask" asp-route-id="@item.Id" class="btn btn-secondary btn-sm"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        counter++;
                     }
-                    else
-                    {
-                        <input type="checkbox" onclick="RedirectToUrl('@redirectUrl')">
-                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
 
-
-
-                    @*             @Html.DisplayFor(modelItem => item.Status)*@
-                </td>
-
-            </tr>
-        }
-    </tbody>
-</table>
-
-
+@await Html.PartialAsync("_CreateItem", "Todo")
 
 <script>
     function RedirectToUrl(url) {

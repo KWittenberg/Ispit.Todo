@@ -10,7 +10,7 @@ public class ToDoService : IToDoService
         this.db = db;
         this.mapper = mapper;
     }
-    
+
 
     /// <summary>
     /// GetToDoList
@@ -21,7 +21,7 @@ public class ToDoService : IToDoService
         var todoList = await db.ToDoList.ToListAsync();
         return todoList.Select(x => mapper.Map<ToDoListViewModel>(x)).ToList();
     }
-    
+
     /// <summary>
     /// GetToDoListById
     /// </summary>
@@ -85,20 +85,6 @@ public class ToDoService : IToDoService
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /// <summary>
     /// GetTasks
     /// </summary>
@@ -110,7 +96,7 @@ public class ToDoService : IToDoService
         if (task == null) { return new List<TaskViewModel>(); }
         return task.Select(x => mapper.Map<TaskViewModel>(x)).ToList();
     }
-    
+
     /// <summary>
     /// GetTask
     /// </summary>
@@ -122,7 +108,7 @@ public class ToDoService : IToDoService
         if (task == null) { return null; }
         return mapper.Map<TaskViewModel>(task);
     }
-    
+
     /// <summary>
     /// CreateTask
     /// </summary>
@@ -138,6 +124,27 @@ public class ToDoService : IToDoService
         await db.SaveChangesAsync();
         return mapper.Map<TaskViewModel>(dbo);
     }
+
+    /// <summary>
+    /// UpdateTask
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public async Task<TaskViewModel?> UpdateTask(TaskUpdateBinding model)
+    {
+        var toDoList = await db.ToDoList.FindAsync(model.ToDoListId);
+        if (toDoList == null) { return null; }
+        var dbo = mapper.Map<Models.Dbo.Task>(model);
+        mapper.Map(model, dbo);
+        dbo.ToDoList = toDoList;
+        db.Task.Update(dbo);
+        await db.SaveChangesAsync();
+        return mapper.Map<TaskViewModel>(dbo);
+    }
+
+
+
+
 
     /// <summary>
     /// ChangeTaskStatus
