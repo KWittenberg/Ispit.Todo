@@ -10,9 +10,7 @@ public class ToDoService : IToDoService
         this.db = db;
         this.mapper = mapper;
     }
-
-
-
+    
 
     /// <summary>
     /// GetToDoList
@@ -23,6 +21,19 @@ public class ToDoService : IToDoService
         var todoList = await db.ToDoList.ToListAsync();
         return todoList.Select(x => mapper.Map<ToDoListViewModel>(x)).ToList();
     }
+    
+    /// <summary>
+    /// GetToDoListById
+    /// </summary>
+    /// <param name="taskId"></param>
+    /// <returns></returns>
+    public async Task<ToDoListViewModel?> GetToDoListById(int Id)
+    {
+        var todoList = await db.ToDoList.FirstOrDefaultAsync(x => x.Id == Id);
+        if (todoList == null) { return null; }
+        return mapper.Map<ToDoListViewModel>(todoList);
+    }
+
 
     /// <summary>
     /// CreateToDoList
@@ -39,6 +50,50 @@ public class ToDoService : IToDoService
         await db.SaveChangesAsync();
         return mapper.Map<ToDoListViewModel>(dbo);
     }
+
+    /// <summary>
+    /// UpdateToDoList
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public async Task<ToDoListViewModel?> UpdateToDoList(ToDoListUpdateBinding model)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(x => x.Id == model.ApplicationUserId);
+        if (user == null) { return null; }
+        var dbo = await db.ToDoList.FindAsync(model.Id);
+        mapper.Map(model, dbo);
+        dbo.ApplicationUser = user;
+        db.ToDoList.Update(dbo);
+        await db.SaveChangesAsync();
+        return mapper.Map<ToDoListViewModel>(dbo);
+    }
+
+    /// <summary>
+    /// Delete ToDoList
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public async Task<ToDoListViewModel> DeleteToDoList(ToDoListUpdateBinding model)
+    {
+        var user = await db.ApplicationUser.FirstOrDefaultAsync(x => x.Id == model.ApplicationUserId);
+        var dbo = await db.ToDoList.FindAsync(model.Id);
+        mapper.Map(model, dbo);
+        dbo.ApplicationUser = user;
+        db.ToDoList.Remove(dbo);
+        await db.SaveChangesAsync();
+        return mapper.Map<ToDoListViewModel>(dbo);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

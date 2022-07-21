@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Ispit.Todo.Models.Dbo
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+
+@model string;
+
+@if (user != null)
+{
+    <div style="position: fixed; right: 50px; bottom: 50px;" class="text-white">
+        <a asp-controller="@Model" asp-action="CreateToDoList" class="btn btn-block btn-secondary"><i class="bi bi-plus-circle"></i> &nbsp; Add New</a>
+    </div>
+}

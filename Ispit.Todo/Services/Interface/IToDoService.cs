@@ -2,10 +2,17 @@
 
 public interface IToDoService
 {
-    Task<TaskViewModel?> ChangeTaskStatus(int taskId, bool status);
-    Task<TaskViewModel?> CreateTask(TaskBinding model);
+    // ToDoListViewModel
+    Task<List<ToDoListViewModel>> GetToDoList();
+    Task<ToDoListViewModel?> GetToDoListById(int Id);
     Task<ToDoListViewModel?> CreateToDoList(ToDoListBinding model);
+    Task<ToDoListViewModel?> UpdateToDoList(ToDoListUpdateBinding model);
+    Task<ToDoListViewModel> DeleteToDoList(ToDoListUpdateBinding model);
+
+
+    // TaskViewModel
     Task<TaskViewModel?> GetTask(int taskId);
     Task<List<TaskViewModel>> GetTasks(int todoListId);
-    Task<List<ToDoListViewModel>> GetToDoList();
+    Task<TaskViewModel?> CreateTask(TaskBinding model);
+    Task<TaskViewModel?> ChangeTaskStatus(int taskId, bool status);
 }
