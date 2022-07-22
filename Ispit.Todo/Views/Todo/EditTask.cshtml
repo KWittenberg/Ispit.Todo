@@ -10,7 +10,6 @@
             <div class="login-form mt-5" align="center"><h2>Edit Task</h2></div>
             <form method="post" asp-action="EditTask">
                 <div class="card-body">
-                    <h3>@Model.Created</h3>
                     <input type="text" name="ToDoListId" value="@Model.ToDoListId" hidden>
                     <div class="form-group">
                         <input asp-for="Title" type="text" class="form-control mt-3" placeholder=" Title">
