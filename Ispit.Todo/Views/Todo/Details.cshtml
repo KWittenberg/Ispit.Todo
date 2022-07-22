@@ -58,7 +58,9 @@
     </main>
 </div>
 
-@await Html.PartialAsync("_CreateItem", "Todo")
+<div style="position: fixed; right: 50px; bottom: 50px;" class="text-white">
+    <a asp-controller="Todo" asp-action="CreateTask" asp-route-id="@Model.ToListId" class="btn btn-block btn-secondary"><i class="bi bi-plus-circle"></i> &nbsp; Add New</a><a asp-controller="Todo" asp-action="Index" class="btn btn-primary">Back</a>
+</div>
 
 <script>
     function RedirectToUrl(url) {
