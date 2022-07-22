@@ -17,6 +17,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 case EntityState.Added:
                     ((IEntityBase)entityEntry.Entity).Created = DateTime.Now;
                     break;
+                case EntityState.Modified:
+                    ((IEntityBase)entityEntry.Entity).Created = DateTime.Now;
+                    break;
                 default:
                     break;
             }
@@ -34,14 +37,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 case EntityState.Added:
                     ((IEntityBase)entityEntry.Entity).Created = DateTime.Now;
                     break;
+                case EntityState.Modified:
+                    ((IEntityBase)entityEntry.Entity).Created = DateTime.Now;
+                    break;
                 default:
                     break;
             }
         }
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
-
-
 
     
     protected override void OnModelCreating(ModelBuilder builder)
@@ -72,18 +76,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             SecurityStamp = "c8c5cc23-1703-4984-8ac7-4b178d2d9982"
 
         });
-
-
+        
         builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
         {
             RoleId = roleId,
             UserId = userId
         });
     }
-
-
+    
 
     public DbSet<ApplicationUser> ApplicationUser { get; set; }
     public DbSet<Models.Dbo.Task> Task { get; set; }
     public DbSet<ToDoList> ToDoList { get; set; }
+    public DbSet<Ispit.Todo.Models.ViewModel.TaskViewModel>? TaskViewModel { get; set; }
 }

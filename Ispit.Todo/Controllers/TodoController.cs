@@ -99,6 +99,18 @@ public class ToDoController : Controller
     }
 
 
+    
+    /// <summary>
+    /// DetailsTask
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<IActionResult> DetailsTask(int id)
+    {
+        var task = await toDoService.GetTask(id);
+        return View(task);
+    }
+    
     /// <summary>
     /// CreateTask
     /// </summary>
@@ -134,24 +146,30 @@ public class ToDoController : Controller
     {
         var task = await toDoService.UpdateTask(model);
         TempData["success"] = "Task update successfully";
-        return RedirectToAction("Details");
+        return RedirectToAction("Details", new { id = task.ToDoList.Id });
+    }
+    
+    /// <summary>
+    /// DeleteTask
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> DeleteTask(int id)
+    {
+        var task = await toDoService.GetTask(id);
+        var model = mapper.Map<TaskUpdateBinding>(task);
+        return View(task);
+    }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteTask(TaskUpdateBinding model)
+    {
+        var task = await toDoService.DeleteTask(model);
+        TempData["success"] = "Task deleted successfully";
+        return RedirectToAction("Details", new { id = task.ToDoList.Id });
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     /// <summary>
     /// ChangeTaskStatus
     /// </summary>

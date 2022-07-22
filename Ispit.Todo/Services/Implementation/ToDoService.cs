@@ -85,6 +85,7 @@ public class ToDoService : IToDoService
     }
 
 
+
     /// <summary>
     /// GetTasks
     /// </summary>
@@ -104,7 +105,7 @@ public class ToDoService : IToDoService
     /// <returns></returns>
     public async Task<TaskViewModel?> GetTask(int taskId)
     {
-        var task = await db.Task.FirstOrDefaultAsync(x => x.Id == taskId);
+        var task = await db.Task.Include(t => t.ToDoList).FirstOrDefaultAsync(x => x.Id == taskId);
         if (task == null) { return null; }
         return mapper.Map<TaskViewModel>(task);
     }
@@ -142,9 +143,22 @@ public class ToDoService : IToDoService
         return mapper.Map<TaskViewModel>(dbo);
     }
 
-
-
-
+    /// <summary>
+    /// DeleteTask
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public async Task<TaskViewModel> DeleteTask(TaskUpdateBinding model)
+    {
+        var toDoList = await db.ToDoList.FindAsync(model.ToDoListId);
+        if (toDoList == null) { return null; }
+        var dbo = await db.Task.FindAsync(model.Id);
+        mapper.Map(model, dbo);
+        dbo.ToDoList = toDoList;
+        db.Task.Remove(dbo);
+        await db.SaveChangesAsync();
+        return mapper.Map<TaskViewModel>(dbo);
+    }
 
     /// <summary>
     /// ChangeTaskStatus
@@ -160,5 +174,4 @@ public class ToDoService : IToDoService
         await db.SaveChangesAsync();
         return mapper.Map<TaskViewModel>(task);
     }
-
 }
