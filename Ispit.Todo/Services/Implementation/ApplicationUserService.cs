@@ -17,22 +17,15 @@ public class ApplicationUserService : IApplicationUserService
     public async Task<ApplicationUserViewModel?> CreateApiUserAsync(ApplicationUserBinding model, string role)
     {
         var result = await CreateUserAsync(model, role);
-        if (result == null)
-        {
-            return null;
-        }
+        if (result == null) { return null; }
         return mapper.Map<ApplicationUserViewModel>(result);
-
     }
 
 
     public async Task<ApplicationUser?> CreateUserAsync(ApplicationUserBinding model, string role)
     {
         var find = await userManager.FindByEmailAsync(model.Email);
-        if (find != null)
-        {
-            return null;
-        }
+        if (find != null) { return null; }
         var user = mapper.Map<ApplicationUser>(model);
         //var adress = mapper.Map<Adress>(model.UserAdress);
         //user.Adress = new List<Adress>() { adress };
@@ -47,5 +40,4 @@ public class ApplicationUserService : IApplicationUserService
         }
         return user;
     }
-
 }
