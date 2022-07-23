@@ -6,6 +6,11 @@ public class MappingProfile : Profile
     {
         // ApplicationUser
         CreateMap<ApplicationUser, ApplicationUserViewModel>();
+        CreateMap<ApplicationUserBinding, ApplicationUser>()
+            .ForMember(dst => dst.UserName, opts => opts.MapFrom(src => src.Email))
+            .ForMember(dst => dst.EmailConfirmed, opts => opts.MapFrom(src => true));
+
+
 
         // ToDoList
         CreateMap<ToDoListBinding, ToDoList>();

@@ -5,11 +5,27 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Add ApplicationUser
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+// Add ApplicationUser OLD
+// builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Add ApplicationUser NEW
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => //options.SignIn.RequireConfirmedAccount = true,
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireDigit = false;
+        options.SignIn.RequireConfirmedEmail = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        options.ClaimsIdentity.UserIdClaimType = JwtRegisteredClaimNames.Jti;
+    }).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
 
 builder.Services.AddControllersWithViews();
 
+// Add ApplicationUserService
+builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 // Add ToDoService
 builder.Services.AddScoped<IToDoService, ToDoService>();
 // Add AutoMapper
