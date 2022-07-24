@@ -9,6 +9,7 @@
         <div class="col-lg-6 offset-lg-3">
             <div class="login-form mt-5" align="center"><h2>New Task</h2></div>
             <form method="post" asp-action="CreateTask">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="card-body">
                     <input type="text" name="ToDoListId" value="@Model.ToDoListId" hidden>
 

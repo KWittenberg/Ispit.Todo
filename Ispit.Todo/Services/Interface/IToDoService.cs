@@ -4,6 +4,7 @@ public interface IToDoService
 {
     // ToDoListViewModel
     Task<List<ToDoListViewModel>> GetToDoList();
+    Task<List<ToDoListViewModel>> GetToDoListByApplicationUserId(string applicationUserId);
     Task<ToDoListViewModel?> GetToDoListById(int Id);
     Task<ToDoListViewModel?> CreateToDoList(ToDoListBinding model);
     Task<ToDoListViewModel?> UpdateToDoList(ToDoListUpdateBinding model);

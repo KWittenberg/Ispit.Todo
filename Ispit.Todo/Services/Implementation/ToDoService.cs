@@ -3,11 +3,13 @@
 public class ToDoService : IToDoService
 {
     private readonly ApplicationDbContext db;
+    private readonly UserManager<ApplicationUser> userManager; 
     private readonly IMapper mapper;
 
-    public ToDoService(ApplicationDbContext db, IMapper mapper)
+    public ToDoService(ApplicationDbContext db, IMapper mapper, UserManager<ApplicationUser> userManager)
     {
         this.db = db;
+        this.userManager = userManager;
         this.mapper = mapper;
     }
 
@@ -21,7 +23,18 @@ public class ToDoService : IToDoService
         var todoList = await db.ToDoList.ToListAsync();
         return todoList.Select(x => mapper.Map<ToDoListViewModel>(x)).ToList();
     }
-
+    
+    /// <summary>
+    /// GetToDoListByApplicationUserId
+    /// </summary>
+    /// <param name="applicationUserId"></param>
+    /// <returns></returns>
+    public async Task<List<ToDoListViewModel>> GetToDoListByApplicationUserId(string applicationUserId)
+    {
+        var todoList = await db.ToDoList.Include(x => x.ApplicationUser).Where(x => x.ApplicationUser.Id == applicationUserId).ToListAsync();
+        return todoList.Select(x => mapper.Map<ToDoListViewModel>(x)).ToList();
+    }
+    
     /// <summary>
     /// GetToDoListById
     /// </summary>

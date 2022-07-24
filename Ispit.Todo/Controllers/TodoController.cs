@@ -4,22 +4,24 @@
 public class ToDoController : Controller
 {
     private readonly IToDoService toDoService;
-    private readonly UserManager<ApplicationUser> UserManager;
+    private readonly UserManager<ApplicationUser> userManager;
     private readonly IMapper mapper;
 
     public ToDoController(IToDoService toDoService, UserManager<ApplicationUser> userManager, IMapper mapper)
     {
         this.toDoService = toDoService;
-        UserManager = userManager;
+        this.userManager = userManager;
         this.mapper = mapper;
     }
 
+    
     public async Task<IActionResult> Index()
     {
-        var todoLists = await toDoService.GetToDoList();
+        var userId = this.userManager.GetUserId(User);
+        var todoLists = await toDoService.GetToDoListByApplicationUserId(userId);
         return View(todoLists);
     }
-
+    
     /// <summary>
     /// Details
     /// </summary>
@@ -33,7 +35,7 @@ public class ToDoController : Controller
         model.ToListId = id;
         return View(model);
     }
-
+    
 
 
     /// <summary>
@@ -49,13 +51,13 @@ public class ToDoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateToDoList(ToDoListBinding model)
     {
-        var userId = UserManager.GetUserId(User);
+        var userId = this.userManager.GetUserId(User);
         model.ApplicationUserId = userId;
         var todoLists = await toDoService.CreateToDoList(model);
         TempData["success"] = "ToDo List create successfully";
         return RedirectToAction("Index");
     }
-    
+
     /// <summary>
     /// EditToDoList
     /// </summary>
@@ -71,13 +73,13 @@ public class ToDoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditToDoList(ToDoListUpdateBinding model)
     {
-        var userId = UserManager.GetUserId(User);
+        var userId = this.userManager.GetUserId(User);
         model.ApplicationUserId = userId;
         var todoLists = await toDoService.UpdateToDoList(model);
         TempData["success"] = "ToDo List update successfully";
         return RedirectToAction("Index");
     }
-    
+
     /// <summary>
     /// Delete ToDoList
     /// </summary>
@@ -99,7 +101,7 @@ public class ToDoController : Controller
     }
 
 
-    
+
     /// <summary>
     /// DetailsTask
     /// </summary>
@@ -110,7 +112,7 @@ public class ToDoController : Controller
         var task = await toDoService.GetTask(id);
         return View(task);
     }
-    
+
     /// <summary>
     /// CreateTask
     /// </summary>
@@ -148,7 +150,7 @@ public class ToDoController : Controller
         TempData["success"] = "Task update successfully";
         return RedirectToAction("Details", new { id = task.ToDoList.Id });
     }
-    
+
     /// <summary>
     /// DeleteTask
     /// </summary>
@@ -169,7 +171,7 @@ public class ToDoController : Controller
         return RedirectToAction("Details", new { id = task.ToDoList.Id });
     }
 
-    
+
     /// <summary>
     /// ChangeTaskStatus
     /// </summary>

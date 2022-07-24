@@ -27,7 +27,7 @@
                     @foreach (var item in Model.Tasks)
                     {
                         string redirectUrl = Url.Action("ChangeTaskStatus", "Todo", new { id = item.Id, status = !item.Status });
-                        
+
                         <tr>
                             <td>@counter</td>
                             <td>@item.Title</td>
@@ -87,9 +87,7 @@
             <div class="modal-body">
                 @foreach (var item in Model.Tasks)
                 {
-                    <h5 class="modal-title" id="@item.Id"></h5>
-                
-                if (item.Id == 2)
+                    if (item.Id == 2)
                     {
                         @item.Title
                         <br />
